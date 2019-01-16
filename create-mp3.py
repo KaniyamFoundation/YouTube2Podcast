@@ -4,9 +4,10 @@ from __future__ import unicode_literals
 from eyed3 import id3
 import yaml
 import os
-import eyed3
 import glob
 import youtube_dl
+import sys
+import time
 
 
 os.system("clear")
@@ -97,4 +98,18 @@ tag.images.set(3, imagedata, "image/jpeg", u"Cover")
 
 tag.save()
 
-print(".....Completed.....")
+print(".....MetaData updated successfully.....")
+
+timestamp = time.strftime('%Y-%m-%d-%H-%M-%S')
+audioTitleInEnglish = book_info['audio_title_in_english']
+ia_identifier = audioTitleInEnglish + "-" + timestamp
+os.rename(os.path.abspath(mp3FileName), audioTitleInEnglish + ".mp3")
+
+ia_upload = "ia upload " + ia_identifier + \
+    " -m collection:opensource -m mediatype:audio -m sponsor:Kaniyam -m language:ta " + \
+    audioTitleInEnglish + ".mp3"
+
+print("Uploading to Internet Archive")
+os.system(ia_upload)
+
+print("Uploaded to https://archive.org/details/" + ia_identifier)
