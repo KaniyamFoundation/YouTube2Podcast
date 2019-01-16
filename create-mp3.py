@@ -22,7 +22,7 @@ print("....Processing the config file....")
 
 book_info = yaml.load(open('mp3Info.yaml'))
 print("...Downloading YouTube File...")
-url = "https://www.youtube.com/watch?v=%s" %book_info['youtube_video_id']
+url = book_info['youtube_video_url']
 
 ydl_opts = {
     'format': 'bestaudio/best',
@@ -37,7 +37,7 @@ with youtube_dl.YoutubeDL(ydl_opts) as ydl:
     info = ydl.extract_info(url, download=True)
     mp3FileName = ydl.prepare_filename(info).replace(info['ext'], 'mp3')
 
-print("..Downloading Completed.."+mp3FileName)
+print("..Downloading Completed..")
 
 if book_info['audio_artist']:
     audioArtist = u""+book_info['audio_artist']
