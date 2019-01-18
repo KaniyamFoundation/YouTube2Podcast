@@ -2,6 +2,14 @@
 # -*- coding: utf-8 -*- 
 from __future__ import unicode_literals
 from eyed3 import id3
+
+from wordpress_xmlrpc import WordPressPost
+from wordpress_xmlrpc import Client
+from wordpress_xmlrpc.methods import posts, media
+from wordpress_xmlrpc.methods.posts import NewPost
+from wordpress_xmlrpc.compat import xmlrpc_client
+from wordpress_xmlrpc.methods import taxonomies
+
 import yaml
 import os
 import glob
@@ -9,19 +17,18 @@ import youtube_dl
 import sys
 import time
 
-
 os.system("clear")
-print(".....Removing existing mp3 files.....")
+print("Removing existing mp3 files...")
 oldFiles = glob.glob("*.mp3")
 for file in oldFiles:
     try:
         os.remove(file)
     except OSError:
         pass
-print("....Processing the config file....")
+print("Processing the config file...")
 
 book_info = yaml.load(open('mp3Info.yaml'))
-print("...Downloading YouTube File...")
+print("Downloading YouTube File...")
 url = book_info['youtube_video_url']
 
 ydl_opts = {
@@ -37,7 +44,7 @@ with youtube_dl.YoutubeDL(ydl_opts) as ydl:
     info = ydl.extract_info(url, download=True)
     mp3FileName = ydl.prepare_filename(info).replace(info['ext'], 'mp3')
 
-print("..Downloading Completed..")
+print("Downloading Completed...")
 
 if book_info['audio_artist']:
     audioArtist = u""+book_info['audio_artist']
@@ -79,7 +86,7 @@ if book_info['audio_language']:
 else:
     audioLang = "" 
 
-print(".....Updating MetaData.....")
+print("Updating MetaData...")
 tag = id3.Tag()
 tag.parse(os.path.abspath(mp3FileName))
 tag.artist = u""+audioArtist
@@ -98,7 +105,7 @@ tag.images.set(3, imagedata, "image/jpeg", u"Cover")
 
 tag.save()
 
-print(".....MetaData updated successfully.....")
+print("MetaData updated successfully.....")
 
 timestamp = time.strftime('%Y-%m-%d-%H-%M-%S')
 audioTitleInEnglish = book_info['audio_title_in_english']
@@ -112,4 +119,25 @@ ia_upload = "ia upload " + ia_identifier + \
 print("Uploading to Internet Archive")
 os.system(ia_upload)
 
-print("Uploaded to https://archive.org/details/" + ia_identifier)
+
+audioURL = "https://archive.org/download/%s/%s" % (ia_identifier, audioTitleInEnglish + ".mp3");
+print("Uploaded to " + audioURL)
+
+print("Posting into WordPress")
+
+wp_username = book_info['wp_username']
+wp_password = book_info['wp_password']
+
+client = Client('https://jskhaleel.wordpress.com/xmlrpc.php', wp_username, wp_password)
+post = WordPressPost()
+
+content = "%s \n %s"% (audioURL, audioComments)
+post.title = info['title']
+post.content = content
+post.post_status = 'publish'
+post.comment_status = 'open'
+post.terms_names = {'category': ['Podcast']}
+post.slug = audioTitleInEnglish
+post.id = client.call(posts.NewPost(post))
+
+print("Posted into WordPress")
