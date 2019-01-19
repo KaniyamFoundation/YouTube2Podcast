@@ -27,9 +27,9 @@ for file in oldFiles:
         pass
 print("Processing the config file...")
 
-book_info = yaml.load(open('mp3Info.yaml'))
+audio_info = yaml.load(open('mp3Info.yaml'))
 print("Downloading YouTube File...")
-url = book_info['youtube_video_url']
+url = audio_info['youtube_video_url']
 
 ydl_opts = {
     'format': 'bestaudio/best',
@@ -46,43 +46,43 @@ with youtube_dl.YoutubeDL(ydl_opts) as ydl:
 
 print("Downloading Completed...")
 
-if book_info['audio_artist']:
-    audioArtist = u""+book_info['audio_artist']
+if audio_info['audio_artist']:
+    audioArtist = u""+audio_info['audio_artist']
 else:
     audioArtist = u"கணியம்" 
 
-if book_info['audio_album']:
-    audioAlbum = u""+book_info['audio_album']
+if audio_info['audio_album']:
+    audioAlbum = u""+audio_info['audio_album']
 else:
     audioAlbum = u"கணியம்" 
 
-if book_info['audio_genre']:
-    audioGenre = book_info['audio_genre']
+if audio_info['audio_genre']:
+    audioGenre = audio_info['audio_genre']
 else:
     audioGenre = "Podcast" 
 
-if book_info['audio_source_url']:
-    audioSourceUrl = book_info['audio_source_url']
+if audio_info['audio_source_url']:
+    audioSourceUrl = audio_info['audio_source_url']
 else:
     audioSourceUrl = " " 
     
-if book_info['audio_publisher_url']:
-    audioPublisherUrl = book_info['audio_publisher_url']
+if audio_info['audio_publisher_url']:
+    audioPublisherUrl = audio_info['audio_publisher_url']
 else:
     audioPublisherUrl = "http://www.kaniyam.com" 
 
-if book_info['audio_license']:
-    audioLicense = book_info['audio_license']
+if audio_info['audio_license']:
+    audioLicense = audio_info['audio_license']
 else:
     audioLicense = "https://creativecommons.org/licenses/by/4.0/" 
 
-if book_info['audio_comments']:
-    audioComments = book_info['audio_comments']
+if audio_info['audio_comments']:
+    audioComments = audio_info['audio_comments']
 else:
     audioComments = "" 
 
-if book_info['audio_language']:
-    audioLang = book_info['audio_language']
+if audio_info['audio_language']:
+    audioLang = audio_info['audio_language']
 else:
     audioLang = "" 
 
@@ -99,7 +99,7 @@ tag.publisher_url = b""+audioPublisherUrl
 tag.copyright_url = b""+audioLicense
 tag.comments.set(u""+audioComments, description=u"", lang=audioLang)
 # read image into memory
-imagedata = open(book_info['audio_art_name'], "rb").read()
+imagedata = open(audio_info['audio_art_name'], "rb").read()
 # append image to tags
 tag.images.set(3, imagedata, "image/jpeg", u"Cover")
 
@@ -108,7 +108,7 @@ tag.save()
 print("MetaData updated successfully.....")
 
 timestamp = time.strftime('%Y-%m-%d-%H-%M-%S')
-audioTitleInEnglish = book_info['audio_title_in_english']
+audioTitleInEnglish = audio_info['audio_title_in_english']
 ia_identifier = audioTitleInEnglish + "-" + timestamp
 os.rename(os.path.abspath(mp3FileName), audioTitleInEnglish + ".mp3")
 
@@ -125,10 +125,12 @@ print("Uploaded to " + audioURL)
 
 print("Posting into WordPress")
 
-wp_username = book_info['wp_username']
-wp_password = book_info['wp_password']
+wp_username = audio_info['wp_username']
+wp_password = audio_info['wp_password']
 
-client = Client('https://jskhaleel.wordpress.com/xmlrpc.php', wp_username, wp_password)
+
+wpBlogUrl = audio_info['wp_blog_url']+'/xmlrpc.php'
+client = Client(wpBlogUrl, wp_username, wp_password)
 post = WordPressPost()
 
 content = "%s \n %s"% (audioURL, audioComments)
