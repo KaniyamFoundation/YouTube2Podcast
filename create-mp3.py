@@ -17,6 +17,15 @@ import youtube_dl
 import sys
 import time
 
+
+# To Fix : URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:841)> in Python
+
+import ssl
+
+ssl._create_default_https_context = ssl._create_unverified_context
+
+
+
 os.system("clear")
 print("Removing existing mp3 files...")
 oldFiles = glob.glob("*.mp3")
@@ -25,13 +34,19 @@ for file in oldFiles:
         os.remove(file)
     except OSError:
         pass
+
 print("Processing the config file...")
 
 audio_info = yaml.load(open('mp3Info.yaml'))
-print("Downloading YouTube File...")
+
+local_file = audio_info['local_file_name']
+
+
 url = audio_info['youtube_video_url']
 
-ydl_opts = {
+if url:
+
+    ydl_opts = {
     'format': 'bestaudio/best',
     'postprocessors': [{
         'key': 'FFmpegExtractAudio',
@@ -39,12 +54,21 @@ ydl_opts = {
         'preferredquality': '320',
     }],
     'outtmpl':'%(title)s-%(id)s.%(ext)s'
-}
-with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-    info = ydl.extract_info(url, download=True)
-    mp3FileName = ydl.prepare_filename(info).replace(info['ext'], 'mp3')
+    }
+    print("Downloading YouTube File...")
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(url, download=True)
+        mp3FileName = ydl.prepare_filename(info).replace(info['ext'], 'mp3')
 
-print("Downloading Completed...")
+    print("Downloading Completed...")
+
+else:
+    mp3FileName = audio_info['local_file_name']
+
+
+audioTitleInEnglish = audio_info['audio_title_in_english']
+
+title = audio_info['title']
 
 if audio_info['audio_artist']:
     audioArtist = u""+audio_info['audio_artist']
@@ -92,12 +116,12 @@ tag.parse(os.path.abspath(mp3FileName))
 tag.artist = u""+audioArtist
 tag.album = u""+audioAlbum
 tag.non_std_genre = u""+audioGenre
-tag.title = u""+info['title']
-tag.artist_url = b""+audioSourceUrl
-tag.audio_source_url = b""+str(url)
-tag.publisher_url = b""+audioPublisherUrl
-tag.copyright_url = b""+audioLicense
-tag.comments.set(u""+audioComments, description=u"", lang=audioLang)
+tag.title = u""+audioTitleInEnglish
+tag.artist_url = b""+bytes(audioSourceUrl,'utf-8')
+tag.audio_source_url = b""+bytes(audioSourceUrl,'utf-8')
+tag.publisher_url = b""+bytes(audioPublisherUrl,'utf-8')
+tag.copyright_url = b""+bytes(audioLicense,'utf-8')
+tag.comments.set(u""+audioComments, description=u"")
 # read image into memory
 imagedata = open(audio_info['audio_art_name'], "rb").read()
 # append image to tags
@@ -134,12 +158,18 @@ client = Client(wpBlogUrl, wp_username, wp_password)
 post = WordPressPost()
 
 content = "%s \n %s"% (audioURL, audioComments)
-post.title = info['title']
+post.title = title
 post.content = content
 post.post_status = 'publish'
 post.comment_status = 'open'
 post.terms_names = {'category': ['Podcast']}
 post.slug = audioTitleInEnglish
+
+if "kaniyam.com" in wpBlogUrl:
+    post.post_type =  'podcast'
+    post.terms_names = ""
+    print("Publishing to Kaniyam")
+
 post.id = client.call(posts.NewPost(post))
 
 print("Posted into WordPress")
