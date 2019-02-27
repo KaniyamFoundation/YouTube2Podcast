@@ -53,9 +53,11 @@ if url:
         'preferredcodec': 'mp3',
         'preferredquality': '320',
     }],
-    'outtmpl':'%(title)s-%(id)s.%(ext)s'
+    'outtmpl':'%(title)s-%(id)s.%(ext)s',
+    'nocheckcertificate':True
     }
     print("Downloading YouTube File...")
+
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
         mp3FileName = ydl.prepare_filename(info).replace(info['ext'], 'mp3')
@@ -117,10 +119,10 @@ tag.artist = u""+audioArtist
 tag.album = u""+audioAlbum
 tag.non_std_genre = u""+audioGenre
 tag.title = u""+audioTitleInEnglish
-tag.artist_url = b""+bytes(audioSourceUrl,'utf-8')
-tag.audio_source_url = b""+bytes(audioSourceUrl,'utf-8')
-tag.publisher_url = b""+bytes(audioPublisherUrl,'utf-8')
-tag.copyright_url = b""+bytes(audioLicense,'utf-8')
+tag.artist_url = str(audioSourceUrl).encode("utf-8")#;b""+bytes(audioSourceUrl,'utf-8')
+tag.audio_source_url = str(audioSourceUrl).encode("utf-8")#b""+bytes(audioSourceUrl,'utf-8')
+tag.publisher_url = str(audioPublisherUrl).encode("utf-8")#b""+bytes(audioPublisherUrl,'utf-8')
+tag.copyright_url = str(audioLicense).encode("utf-8")#b""+bytes(audioLicense,'utf-8')
 tag.comments.set(u""+audioComments, description=u"")
 # read image into memory
 imagedata = open(audio_info['audio_art_name'], "rb").read()
@@ -142,7 +144,6 @@ ia_upload = "ia upload " + ia_identifier + \
 
 print("Uploading to Internet Archive")
 os.system(ia_upload)
-
 
 audioURL = "https://archive.org/download/%s/%s" % (ia_identifier, audioTitleInEnglish + ".mp3");
 print("Uploaded to " + audioURL)

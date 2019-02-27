@@ -1,18 +1,17 @@
-youtube_video_url : 
-local_file_name : balaji_interview_with_tamilappan_books_collector.mp3 
-audio_title_in_english : balaji_interview_with_tamilappan_books_collector
-title : புத்தக சேமிப்பாளர் திரு. தமிழப்பனார் அவர்களுடன் விக்கி மூலம் தன்னார்வலர் திரு. பாலாஜி உரையாடல்
-audio_artist : பாலாஜி, தமிழப்பனார்
-audio_album : கணியம்
-audio_genre : பேட்டி
+youtube_video_url : https://www.youtube.com/watch?v=EgGvpeZ8gyI
+local_file_name : 
+audio_title_in_english : vasagasalai_sirukathai_kondattam_event_63_visvasi
+title : வாசகசாலை - சிறுகதை கொண்டாட்டம் - நிகழ்வு 63 - அண்ணா நூற்றாண்டு
+audio_artist : வாசகசாலை
+audio_album : இலக்கியம்
+audio_genre : Podcast
 audio_source_url : http://kaniyam.com
 audio_license : https://creativecommons.org/licenses/by/4.0/
-audio_comments : புத்தக சேமிப்பாளர் திரு. தமிழப்பனார் அவர்களுடன் விக்கி மூலம் தன்னார்வலர் திரு. பாலாஜி உரையாடலின் ஒலிப்பதிவு.
-
+audio_comments : அண்ணா நூற்றாண்டு நூலகத்துடன் வாசகசாலை இணைந்து வழங்கும் தமிழ் சிறுகதைக்கு கொண்டாட்டம் வாராந்திர நிகழ்வு - 63 சமீபத்தில் நடைபெற்றது . அதில் ஜீ. முருகனின் விசுவாசி சிறுகதை குறித்து தோழி யோகநந்தினி பேசியதன் தொகுப்பு
 audio_language : tam
-audio_art_name : balaji-tamilappan.jpg
+audio_art_name : thumb.png
 audio_publisher_url : http://www.kaniyam.com/
 
-wp_username : 
-wp_password : 
-wp_blog_url : 
+wp_username : wp_username
+wp_password : wp_password
+wp_blog_url : https://vasagasalai.art.blog
